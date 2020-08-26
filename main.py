@@ -5,132 +5,177 @@ For experimenting things in discord.
 """
 
 import discord
-import calc
-from stock import show_stock
-from gamble import init, wallet
+import stock
+import ranking
 
 client = discord.Client()
 
-bot_name = '호돌봇'  # bot name
-bot_call = '호돌아'  # call bot
-
-game_list = ['주사위 굴리기', '가위바위보', '로렘 입숨 생성기', '초성게임', '거꾸로 치기']  # 게임 이름
+bot_name = "호돌봇"  # bot name
+bot_call = "호돌아"  # bot call
 
 
-# log-in
+# log in
 @client.event
 async def on_ready():
-    print("------")
+    print("---------------")
     print("Logged in as:")
     print(client.user.name)
     print(client.user.id)
-    print("------")
+    print("---------------")
 
 
-# process message
+# handle messages
 @client.event
 async def on_message(message):
-    msg = message.content
-    chnl = message.channel
+    content: str = message.content
+    channel = message.channel
 
-    if msg.startswith(bot_call):
+    if content.startswith(bot_call):
+        text = content.replace(bot_call, "").strip()  # text excluding "호돌아 "
 
-        # say hello
-        if msg[4:6] == '안녕' \
-                or msg[4:6] == '안뇽' \
-                or msg[4:6] == '아령' \
-                or msg[4:6] == '하이' \
-                or msg[4:6] == 'ㅎㅇ':
-            await chnl.send("어흥~!")
+        # ##################################################
+        # commands for playing
+        for s in ['안녕', '안뇽', '아령', '하이', 'ㅎㅇ']:
+            if s in text:
+                await channel.send("어흥~!")
+                break
 
-        # say goodbye
-        elif msg[4:6] == '잘가' \
-                or msg[4:6] == '꺼져' \
-                or msg[4:6] == 'ㅃ2' \
-                or msg[4:6] == 'ㅂ2' \
-                or msg[4:6] == '빠이' \
-                or msg[4:6] == '바이' \
-                or msg[4:7] == '잘 가':
-            await chnl.send("안 된다 이 악마야!")
+        for s in ['잘가' '잘 가', '꺼져', 'ㄲㅈ', 'ㅃ2', '빠이', '바이']:
+            if s in text:
+                await channel.send("안 된다 이 악마야!")
+                break
 
-        # stock
-        elif msg[4:6] == '주식':
-            url_k = "https://finance.naver.com/sise/"
-            url_last = "https://finance.naver.com/sise/lastsearch2.nhn"
-            await show_stock(chnl, url_k, url_last)
+        for s in ['말해봐', '말해 봐', '말해']:
+            if s in text:
+                await channel.send("안녕!")
+                break
+        for s in ['읊어봐', '읊어 봐', '읊어']:
+            if s in text:
+                await channel.send("어흥 어흥 어흥")
+                break
+        for s in ['글써봐', '글써 봐', '글 써봐', '글 써 봐']:
+            if s in text:
+                await channel.send("나랏말싸미...")
+                break
 
-        # calculate
-        elif msg[4:6] == '계산':
-            if msg[7:11] == '원의둘레':
-                await chnl.send(calc.circle_circumference(float(msg[12:])))
-            elif msg[7:11] == '원의넓이':
-                await chnl.send(calc.circle_area(float(msg[12:])))
-            elif msg[7:10] == '방정식':
-                code = calc.prob_to_code(msg)
+        # ##################################################
+        # commands for information
+        if '주식' in text:
+            # check if it's help command
+            is_help = 0
+            for h in ['도움', '도움말', '도와줘']:
+                if h in text:
+                    is_help = 1
+            if is_help:
+                pass
 
-                url = 'https://www.wolframalpha.com/input/?i='
-                url += code
-                await chnl.send(url)
+            else:
+                if '주요종목' in text:
+                    stk = stock.Stock(channel)
+                    stk.all_major()
+                else:
+                    stk = stock.Stock(channel)
+                await stk.show()
 
-        # play
-        elif msg[4:7] == '놀아줘':
-            if msg[8:11] == '말해봐' \
-                    or msg[8:12] == '말해 봐':
-                await chnl.send('안녕!')
-            elif msg[8:11] == '읊어봐' \
-                    or msg[8:12] == '읊어 봐':
-                await chnl.send("어흥 어흥 어흥")
-            elif msg[8:12] == '글 써봐' \
-                    or msg[8:11] == '글써봐' \
-                    or msg[8:13] == '글 써 봐':
-                await chnl.send('나랏말싸미...')
+        for s in ['순위', '랭킹']:
+            if s in text:
+                # check if it's help command
+                is_help = 0
+                for h in ['도움', '도움말', '도와줘']:
+                    if h in text:
+                        is_help = 1
+                if is_help:
+                    pass
 
-        # learn
-        elif msg[4:6] == '학습':
-            await chnl.send("기능구현 예정")
+                else:
+                    if '프로그래밍' in text:
+                        url = "https://www.tiobe.com/tiobe-index/"
+                        rank = ranking.Ranking(channel)
+                        rank.programming(url)
+                        await rank.show("")
+                        break
 
-        # gamble
-        elif msg[4:6] == '도박':
-            if msg[7:10] == '초기화':
-                init(message)
-                await chnl.send("@"+'555720974398652436'+"돈이 10000원으로 초기화됐습니다.")
-            elif msg[7:9] == '지갑':
-                money = wallet(message)
-                await chnl.send("%d원 남았습니다." % int(money))
-            elif msg[7:9] == '배팅':
-                await chnl.send("")
+        # ##################################################
+        # commands for misc
+        for s in ['도움', '도움말', '도와줘']:
+            if s in text:
+                if '인사' in text:
+                    embed = discord.Embed(title="인사",
+                                          description="호돌봇이 당신에게 인사합니다!"
+                                                      "\n[안녕]: 만남 인사"
+                                                      "\n[잘가]: 작별 인사",
+                                          color=0x04fc81)
+                elif '놀기' in text:
+                    embed = discord.Embed(title="놀기",
+                                          description="호돌봇이 당신과 놀아줍니다!"
+                                                      "\n재미 없을 지도 몰라요."
+                                                      "\n[말해봐]: 말하기"
+                                                      "\n[읊어봐]: 시 읊기"
+                                                      "\n[글 써봐]: 글 쓰기",
+                                          color=0x04fc81)
+                elif '주식' in text:
+                    embed = discord.Embed(title="주식",
+                                          description="주식 현황을 알려줍니다."
+                                                      "\n아직은 코스피, 코스닥, 코스피200밖에 없어요."
+                                                      "\n[주식]: 주식 데이터",
+                                          color=0x04fc81)
+                elif '순위' in text:
+                    embed = discord.Embed(title="순위",
+                                          description="각종 순위를 보여줍니다."
+                                                      "\n별 신기한 게 다 있어요!"
+                                                      "\n[순위]-[프로그래밍]: 프로그래밍 언어 순위",
+                                          color=0x04fc81)
+                elif '개발자' in text:
+                    embed = discord.Embed(title="개발자",
+                                          description="저를 창조한 분이에요!"
+                                                      "\n[개발자]: '그'의 정보 확인하기",
+                                          color=0x04fc81)
+                else:
+                    embed = discord.Embed(title='봇 정보',
+                                          description="",
+                                          color=0x04fc81)
+                    embed.add_field(name='명령어 목록',
+                                    value="\n인사: [안녕], [잘가]"
+                                          "\n놀기: [말해봐], [읊어봐], [글 써봐]"
+                                          "\n주식: [주식]"
+                                          "\n순위: [순위]-[프로그래밍]"
+                                          "\n기타: [도움], [개발자]",
+                                    inline=False)
+                await channel.send(embed=embed)
+                break
 
-        # ask for help
-        elif msg[4:6] == '도움' \
-                or msg[4:7] == '도움말' \
-                or msg[4:7] == '도와줘':
-            embed = discord.Embed(title='봇 정보',
-                                  description="<명령어 목록>"
-                                              "\n[안녕]"
-                                              "\n[잘가]"
-                                              "\n[계산]: 원의둘레, 원의넓이"
-                                              "\n[주식]"
-                                              "\n[놀아줘]: 말해봐, 읊어봐, 글 써봐"
-                                              "\n[도박]: 초기화, 지갑, 베팅"
-                                              "\n기타: [도움], [개발자]",
-                                  color=0x0f4c81)
-            await chnl.send(embed=embed)
+        if '개발자' in text:
+            # check if it's help command
+            is_help = 0
+            for h in ['도움', '도움말', '도와줘']:
+                if h in text:
+                    is_help = 1
+            if is_help:
+                pass
 
-        elif msg[4:7] == '개발자':
-            embed = discord.Embed(title='개발자 정보',
-                                  description="AI입니다. 하지만 할 수 있는 게 아무것도 없습니다.",
-                                  color=0x0f4c81)
-            embed.add_field(name='디미백과',
-                            value='https://dimipedia.net/wiki/%EC%82%AC%ED%98%B8%EC%A4%80',
-                            inline=False)
-            embed.add_field(name='깃허브',
-                            value='https://github.com/sqrtpi177',
-                            inline=False)
-            embed.add_field(name='블로그',
-                            value='https://blog.naver.com/moy0037',
-                            inline=False)
-            await chnl.send(embed=embed)
+            else:
+                embed = discord.Embed(title='개발자 정보',
+                                      description="AI입니다. 하지만 할 수 있는 게 아무것도 없습니다."
+                                                  "\n궁금하면 찾아가 보시죠?",
+                                      color=0x0f4c81)
+                embed.add_field(name='디미백과',
+                                value='https://dimipedia.net/wiki/%EC%82%AC%ED%98%B8%EC%A4%80',
+                                inline=False)
+                embed.add_field(name='깃허브',
+                                value='https://github.com/sqrtpi177',
+                                inline=False)
+                embed.add_field(name='블로그',
+                                value='https://blog.naver.com/moy0037',
+                                inline=False)
+                embed.add_field(name='페이스북',
+                                value='https://www.facebook.com/profile.php?id=100029757106182',
+                                inline=False)
+                embed.add_field(name="유튜브",
+                                value="https://www.youtube.com/channel/UCkxI0ozgMOV3Akpyr6QQ5RQ",
+                                inline=False)
+                await channel.send(embed=embed)
 
 
-# replace it with your token
-client.run('token')
+if __name__ == '__main__':
+    # replace it with your token
+    client.run('token')

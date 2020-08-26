@@ -1,86 +1,62 @@
 import discord
-import requests
+import urllib.request
+from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 
-async def show_stock(channel, url_k, url_last):
-    # KOSPI, KOSDAQ, KPI200
+class Stock:
+    def __init__(self, channel):
+        self.channel = channel
+        self.stocks = []
 
-    req_k = requests.get(url_k)
-    html_k = req_k.text
-    bs_k = BeautifulSoup(html_k, 'html.parser')
+    # add all major stocks(kospi, kosdaq, kospi200)
+    def all_major(self):
+        self.stock_major('kospi')
+        self.stock_major('kosdaq')
+        self.stock_major('kospi200')
 
-    kospi_now_value = bs_k.find('span', {'id': 'KOSPI_now'}).text[:-1]
-    kospi_change_raw = bs_k.find('span', {'id': 'KOSPI_change'}).text
-    kospi_change_value = kospi_change_raw.split(' ')[0][1:]
-    kospi_change_rate = kospi_change_raw.split(' ')[1][:-3]
-    kospi_change_value = decorate(kospi_change_value, kospi_change_rate)
+    # add major stock(kospi, kosdaq, kospi200)
+    def stock_major(self, stock_type):
+        eng2kor = {'kospi': '코스피', 'kosdaq': '코스닥', 'kospi200': '코스피200'}
 
-    kosdaq_now_value = bs_k.find('span', {'id': 'KOSDAQ_now'}).text[:-1]
-    kosdaq_change_raw = bs_k.find('span', {'id': 'KOSDAQ_change'}).text
-    kosdaq_change_value = kosdaq_change_raw.split(' ')[0][1:]
-    kosdaq_change_rate = kosdaq_change_raw.split(' ')[1][:-3]
-    kosdaq_change_value = decorate(kosdaq_change_value, kosdaq_change_rate)
+        url = "https://finance.naver.com/sise/sise_index.nhn?code=" + stock_type.upper()
+        req = urllib.request.Request(url)
+        html = urlopen(req)
+        soup = BeautifulSoup(html, "html.parser")
 
-    kpi200_now_value = bs_k.find('span', {'id': 'KPI200_now'}).text[:-1]
-    kpi200_change_raw = bs_k.find('span', {'id': 'KPI200_change'}).text
-    kpi200_change_value = kpi200_change_raw.split(' ')[0][1:]
-    kpi200_change_rate = kpi200_change_raw.split(' ')[1][:-3]
-    kpi200_change_value = decorate(kpi200_change_value, kpi200_change_rate)
+        nv = soup.find("em", {"id": "now_value"}).text.strip()
+        c_raw = soup.find("span", {"id": "change_value_and_rate"}).text.strip()
+        cv = c_raw.split(' ')[0]
+        cr = c_raw.split(' ')[1]
+        cv, cr = decorate(cv, cr)
+        self.stocks.append({'name': eng2kor[stock_type],
+                            'nv': nv,
+                            'cv': cv,
+                            'cr': cr})
 
-    # Top Stocks
+    # show stock
+    async def show(self):
+        embed = discord.Embed(title='주식 정보',
+                              description='코스피, 코스닥, 코스피200 정보입니다.',
+                              color=0x0f4c81)
 
-    req_last = requests.get(url_last)
-    html_last = req_last.text
-    bs_last = BeautifulSoup(html_last, 'html.parser')
+        for data in self.stocks:
+            embed.add_field(name=data['name'],
+                            value="{}\n{} {}".format(data['nv'], data['cv'], data['cr']),
+                            inline=True)
 
-    last_name = []
-    last_now_value = []
-    last_change_value = []
-    last_change_rate = []
-    for i in range(2, 7):
-        last = bs_last.find('table', {'class': 'type_5'}).find_all('tr')[i].find_all('td')
-        last_name.append(last[1].text)
-        last_now_value.append(last[3].text)
-        last_change_value.append(last[4].find('span').text[5:-5])
-        last_change_rate.append(last[5].find('span').text[5:])
-        last_change_value[i-2] = decorate(last_change_value[i-2], last_change_rate[i-2])
+        embed.set_footer(text='정보 제공: 네이버 금융')
 
-    embed = discord.Embed(title='주식 정보', description='주식 정보입니다.', color=0x0f4c81)
-
-    embed.add_field(name='------------------------------------------------------------',
-                    value='[코스피, 코스닥, 코스피 200]',
-                    inline=False)
-
-    embed.add_field(name='코스피',
-                    value=kospi_now_value + '\n' + kospi_change_value + ' ' + kospi_change_rate,
-                    inline=True)
-    embed.add_field(name='코스닥',
-                    value=kosdaq_now_value + '\n' + kosdaq_change_value + ' ' + kosdaq_change_rate,
-                    inline=True)
-    embed.add_field(name='코스피 200',
-                    value=kpi200_now_value + '\n' + kpi200_change_value + ' ' + kpi200_change_rate,
-                    inline=True)
-
-    embed.add_field(name='------------------------------------------------------------',
-                    value='[검색상위 종목]',
-                    inline=False)
-
-    for i in range(0, 5):
-        embed.add_field(name=last_name[i],
-                        value=last_now_value[i] + '\n' + last_change_value[i] + ' ' + last_change_rate[i],
-                        inline=True)
-
-    embed.set_footer(text='정보 제공: 네이버 금융')
-
-    await channel.send(embed=embed)
+        await self.channel.send(embed=embed)
 
 
-def decorate(value, rate):
+def decorate(value, rate: str):
     if rate[0] == '+':
         value = '▲'+value
+        rate = rate.replace("상승", "")
     elif rate[0] == '-':
         value = '▼'+value
+        rate = rate.replace("하락", "")
     else:
         value = '-'+value
-    return value
+    return value, rate
