@@ -1,9 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
-.idea/.gitignore
-.idea/hodol-bot.iml
-.idea/inspectionProfiles/
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
+.idea/
 __pycache__/
 token.txt

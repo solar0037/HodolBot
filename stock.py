@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 
 class Stock:
-    def __init__(self, channel):
+    def __init__(self, channel):  # set channel=None for debugging
         self.channel = channel
         self.stocks = []
 
@@ -49,6 +49,15 @@ class Stock:
 
         await self.channel.send(embed=embed)
 
+    # for debugging
+    def debug(self):
+        for data in self.stocks:
+            # embed.add_field(name=data['name'],
+            #                 value="{}\n{} {}".format(data['nv'], data['cv'], data['cr']),
+            #                 inline=True)
+            print(data['name'])
+            print(data['nv'], data['cv'], data['cr'])
+
 
 def decorate(value, rate: str):
     if rate[0] == '+':
@@ -60,3 +69,9 @@ def decorate(value, rate: str):
     else:
         value = '-'+value
     return value, rate
+
+
+if __name__ == '__main__':
+    stock = Stock(None)
+    stock.all_major()
+    stock.debug()
