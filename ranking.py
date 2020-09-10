@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import requests
-from urllib.request import urlopen
 import discord
 
 
@@ -12,8 +11,8 @@ class Ranking:
 
     def programming(self):
         url = "https://www.tiobe.com/tiobe-index/"
-        html = urlopen(url)
-        soup = BeautifulSoup(html, "html.parser")
+        html = requests.get(url)
+        soup = BeautifulSoup(html.text, "html.parser")
         table = soup.find("table", {"id": "top20"})
         tr_list = table.find("tbody").find_all("tr")
 
@@ -37,7 +36,6 @@ class Ranking:
     def anime(self):
         url = "http://anime.onnada.com/rank.php"
         html = requests.get(url)
-
         soup = BeautifulSoup(html.content.decode('utf-8', 'replace'), 'html.parser')
         tables = soup.find_all('table', class_='web-array')
         tr_list = tables[0].find_all('tr')
