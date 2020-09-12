@@ -3,6 +3,8 @@
 깃허브 레포지토리: https://github.com/sqrtpi177/hodol-bot
 """
 
+import random
+
 import discord
 
 from stock import Stock
@@ -33,7 +35,7 @@ async def on_message(message):
 
     if content.startswith(bot_call):
         text = content.replace(bot_call, "").strip()  # "호돌아 "를 제외한 나머지 텍스트
-        print(text)
+        print(f"message: {text}")
 
         # default=True -> 축약 검사
         default = True
@@ -76,6 +78,12 @@ async def on_message(message):
                 await channel.send("나랏말싸미...")
                 default = False
                 break
+
+        # 놀기: 주사위
+        for s in ['주사위']:
+            if s in text:
+                num = random.randint(1, 6)
+                await channel.send(f'주사위를 굴려 나온 숫자: {str(num)}')
 
         ##################################################
         #               주식, 코로나, 순위               #
@@ -220,7 +228,7 @@ async def on_message(message):
                                               color=0x04fc81)
                         embed.add_field(name='명령어 목록',
                                         value="\n인사: [안녕], [잘가]"
-                                              "\n놀기: [말해봐], [읊어봐], [글 써봐]"
+                                              "\n놀기: [말해봐], [읊어봐], [글 써봐], [주사위]"
                                               "\n주식: [주식]"
                                               "\n코로나: [코로나]"
                                               "\n순위: [순위]-[프로그래밍], [애니]"
