@@ -1,7 +1,6 @@
 """
-Hodol-Bot.
-Updated whenever the author wants.
-For experimenting things in discord.
+호돌봇의 소스코드입니다.
+깃허브 레포지토리: https://github.com/sqrtpi177/hodol-bot
 """
 
 import discord
@@ -12,11 +11,11 @@ from covid19 import Covid19
 
 client = discord.Client()
 
-bot_name = "호돌봇"  # bot name
-bot_call = "호돌아"  # bot call
+bot_name = "호돌봇"  # 봇 이름
+bot_call = "호돌아"  # 봇 호출
 
 
-# log in
+# 로그인
 @client.event
 async def on_ready():
     print("---------------")
@@ -26,43 +25,52 @@ async def on_ready():
     print("---------------")
 
 
-# handle messages
+# 메세지 처리
 @client.event
 async def on_message(message):
     content: str = message.content
     channel: discord.TextChannel = message.channel
 
     if content.startswith(bot_call):
-        text = content.replace(bot_call, "").strip()  # text excluding "호돌아 "
+        text = content.replace(bot_call, "").strip()  # "호돌아 "를 제외한 나머지 텍스트
+        print(text)
 
-        # default=True -> check for abbreviations
+        # default=True -> 축약 검사
         default = True
 
         ##################################################
-        #               commands for playing             #
+        #                   인사, 놀기                   #
         ##################################################
+
+        # 인사: 안녕
         for s in ['안녕', '안뇽', '아령', '하이', 'ㅎㅇ']:
             if s in text:
                 await channel.send("어흥~!")
                 default = False
                 break
 
-        for s in ['잘가' '잘 가', '꺼져', 'ㄲㅈ', 'ㅃ2', '빠이', '바이']:
+        # 인사: 잘가
+        for s in ['잘가', '잘 가', '꺼져', 'ㄲㅈ', 'ㅃ2', '빠이', '바이']:
             if s in text:
                 await channel.send("안 된다 이 악마야!")
                 default = False
                 break
 
+        # 놀기: 말해봐
         for s in ['말해봐', '말해 봐', '말해']:
             if s in text:
                 await channel.send("안녕!")
                 default = False
                 break
+
+        # 놀기: 읊어봐
         for s in ['읊어봐', '읊어 봐', '읊어']:
             if s in text:
                 await channel.send("어흥 어흥 어흥")
                 default = False
                 break
+
+        # 놀기: 글 써봐
         for s in ['글써봐', '글써 봐', '글 써봐', '글 써 봐']:
             if s in text:
                 await channel.send("나랏말싸미...")
@@ -70,18 +78,18 @@ async def on_message(message):
                 break
 
         ##################################################
-        #           commands for information             #
+        #               주식, 코로나, 순위               #
         ##################################################
+
+        # 주식: 주식
         for s in ['주식']:
             if s in text and not is_help(text):
-                if '주요종목' in text:
-                    stock = Stock(channel)
-                    stock.all_major()
-                else:
-                    stock = Stock(channel)
+                stock = Stock(channel)
+                stock.all_major()
                 await stock.show()
                 default = False
 
+        # 코로나: 코로나
         for s in ['코로나']:
             if s in text and not is_help(text):
                 covid19 = Covid19(channel)
@@ -89,26 +97,32 @@ async def on_message(message):
                 await covid19.show()
                 default = False
 
+        # 순위: 순위
         for s in ['순위', '랭킹']:
             if s in text and not is_help(text):
+                # 순위 - 프로그래밍
                 for keyword in ['프로그래밍', '플밍']:
                     if keyword in text:
                         ranking = Ranking(channel)
                         ranking.programming()
-                        await ranking.show("")
+                        await ranking.show()
                         default = False
                         break
+
+                # 순위 - 애니
                 for keyword in ['애니', '애니메이션', '아니메']:
                     if keyword in text:
                         ranking = Ranking(channel)
                         ranking.anime()
-                        await ranking.show("")
+                        await ranking.show()
                         default = False
                         break
 
         ##################################################
-        #               commands for misc                #
+        #                   개발자                       #
         ##################################################
+
+        # 기타: 개발자
         for s in ['개발자', '만든 사람']:
             if s in text and not is_help(text):
                 embed = discord.Embed(title='개발자 정보',
@@ -133,37 +147,32 @@ async def on_message(message):
                 await channel.send(embed=embed)
 
         ##################################################
-        #   default: check for abbreviations and etc     #
+        #               default: 축약 등 검사            #
         ##################################################
-        if default and not is_help(text):
-            # 주식
-            for keyword in ['주식']:
-                if keyword in text:
-                    if '주요종목' in text:
-                        stock = Stock(channel)
-                        stock.all_major()
-                    else:
-                        stock = Stock(channel)
-                    await stock.show()
 
+        # 주식
+        if default and not is_help(text):
             # 순위 - 프로그래밍
             for keyword in ['프로그래밍', '플밍']:
                 if keyword in text:
                     ranking = Ranking(channel)
                     ranking.programming()
-                    await ranking.show("")
+                    await ranking.show()
                     break
+
             # 순위 - 애니메이션
             for keyword in ['애니', '애니메이션', '아니메']:
                 if keyword in text:
                     ranking = Ranking(channel)
                     ranking.anime()
-                    await ranking.show("")
+                    await ranking.show()
                     break
 
         ##################################################
-        #                       help                     #
+        #                   도움말                       #
         ##################################################
+
+        # 기타: 도움
         if is_help(text):
             for s in ['도움', '도움말', '도와줘']:
                 if s in text:
@@ -221,7 +230,7 @@ async def on_message(message):
                     break
 
 
-# check if it's help command
+# 도움말인지 검사
 def is_help(text):
     for h in ['도움', '도움말', '도와줘']:
         if h in text:
@@ -230,5 +239,5 @@ def is_help(text):
 
 if __name__ == '__main__':
     with open("./token.txt", 'r', encoding='utf-8') as f:
-        token = f.read()
+        token = f.read()  # token 유출 방지
     client.run(token)

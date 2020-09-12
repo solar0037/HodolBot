@@ -1,14 +1,13 @@
 from bs4 import BeautifulSoup
 import requests
-import discord
 
 
 class Ranking:
-    def __init__(self, channel):  # set channel=None for debugging
+    def __init__(self, channel):  # 디버깅: channel=None
         self.channel = channel
         self.message = ""
-        self.embed = discord.Embed()
 
+    # 프로그래밍
     def programming(self):
         url = "https://www.tiobe.com/tiobe-index/"
         html = requests.get(url)
@@ -20,49 +19,48 @@ class Ranking:
         for i in range(0, len(tr_list)):
             lang_list.append(tr_list[i].find_all("td")[3].text)
 
+        # 메세지 설정
+        self.message += "```javascript\n"
+        self.message += "프로그래밍 언어 순위\n" \
+                        "2020년 TIOBE 제공 프로그래밍 언어 순위입니다.\n" \
+                        "--------------------------------------------------\n"
         for i, data in enumerate(lang_list):
-            self.message += "{}위: {}\n".format(i + 1, data)
+            self.message += "%4s %s\n" % (str(i+1)+"위:", data)
+        self.message += "--------------------------------------------------\n"\
+                        "정보 제공: TIOBE\n"
+        self.message += "```"
 
-        # set message
-        self.embed = discord.Embed(title='프로그래밍 언어 순위',
-                                   color=0x0f4c81)
-        self.embed.add_field(name="2020년 프로그래밍 언어 순위입니다.",
-                             value='---------------------------------------------\n'
-                                   + self.message
-                                   + '---------------------------------------------',
-                             inline=False)
-        self.embed.set_footer(text='정보 제공: TIOBE')
-
+    # 애니
     def anime(self):
         url = "http://anime.onnada.com/rank.php"
         html = requests.get(url)
         soup = BeautifulSoup(html.content.decode('utf-8', 'replace'), 'html.parser')
+
         tables = soup.find_all('table', class_='web-array')
         tr_list = tables[0].find_all('tr')
-        # range(4, 23, 2)
         td_list = []
-        for i in range(3, 23, 2):
+        for i in range(3, 43, 2):
             td_list.append(tr_list[i])
         anime_list = []
         for item in td_list:
             anime_list.append(item.find_all('td')[2].find('a').text)
 
+        # 메세지 설정
+        self.message += "```javascript\n"
+        self.message += "애니메이션 순위\n" \
+                        "현재 온나다 제공 애니메이션 순위입니다.\n" \
+                        "--------------------------------------------------\n"
         for i, data in enumerate(anime_list):
-            self.message += "{}위: {}\n".format(i + 1, data)
+            self.message += "%4s %s\n" % (str(i + 1) + "위:", data)
+        self.message += "--------------------------------------------------\n" \
+                        "정보 제공: 온나다\n"
+        self.message += '```'
 
-        # set message
-        self.embed = discord.Embed(title='애니메이션 순위',
-                                   color=0x0f4c81)
-        self.embed.add_field(name="애니메이션 순위입니다.",
-                             value='---------------------------------------------\n'
-                                   + self.message
-                                   + '---------------------------------------------',
-                             inline=False)
-        self.embed.set_footer(text='정보 제공: 온나다')
+    # 메세지 보내기
+    async def show(self):
+        await self.channel.send(self.message)
 
-    async def show(self, message):
-        await self.channel.send(message, embed=self.embed)
-
+    # 디버깅 전용
     def debug(self):
         print(self.message)
 

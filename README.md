@@ -1,3 +1,3 @@
-Hodol-Bot.
-He will play with you.
-However, it might not be fun.
+호돌봇의 소스 코드입니다.
+당신과 놀아줄 거에요.
+하지만 재미 없을 지도 모릅니다.

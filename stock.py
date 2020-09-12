@@ -1,21 +1,34 @@
-import discord
 import urllib.request
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 
 class Stock:
-    def __init__(self, channel):  # set channel=None for debugging
+    def __init__(self, channel):  # 디버깅: channel=None
         self.channel = channel
         self.stocks = []
+        self.message = ""
 
-    # add all major stocks(kospi, kosdaq, kospi200)
+    # 모든 주요종목 추가(코스피, 코스닥, 코스피200)
     def all_major(self):
         self.stock_major('kospi')
         self.stock_major('kosdaq')
         self.stock_major('kospi200')
 
-    # add major stock(kospi, kosdaq, kospi200)
+        # 메세지 설정
+        self.message += "```javascript\n"
+        self.message += "주식 정보\n" \
+                        "현재 코스피, 코스닥, 코스피200 정보입니다.\n" \
+                        "--------------------------------------------------\n"
+        for data in self.stocks:
+            self.message += "{:10s} {:10s} {:5s}({:5s})\n".format(
+                data['name'], data['nv'], data['cv'], data['cr']
+            )
+        self.message += "--------------------------------------------------\n" \
+                        "정보 제공: 네이버 금융\n"
+        self.message += "```"
+
+    # 주요종목 추가(코스피, 코스닥, 코스피200)
     def stock_major(self, stock_type):
         eng2kor = {'kospi': '코스피', 'kosdaq': '코스닥', 'kospi200': '코스피200'}
 
@@ -34,22 +47,11 @@ class Stock:
                             'cv': cv,
                             'cr': cr})
 
-    # show stock
+    # 메세지 보내기
     async def show(self):
-        embed = discord.Embed(title='주식 정보',
-                              description='코스피, 코스닥, 코스피200 정보입니다.',
-                              color=0x0f4c81)
+        await self.channel.send(self.message)
 
-        for data in self.stocks:
-            embed.add_field(name=data['name'],
-                            value="{}\n{} {}".format(data['nv'], data['cv'], data['cr']),
-                            inline=True)
-
-        embed.set_footer(text='정보 제공: 네이버 금융')
-
-        await self.channel.send(embed=embed)
-
-    # for debugging
+    # 디버깅 전용
     def debug(self):
         for data in self.stocks:
             # embed.add_field(name=data['name'],
@@ -59,6 +61,7 @@ class Stock:
             print(data['nv'], data['cv'], data['cr'])
 
 
+# 주식 변동 문자열 꾸미기
 def decorate(value, rate: str):
     if rate[0] == '+':
         value = '▲'+value
