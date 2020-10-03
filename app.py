@@ -3,8 +3,8 @@ from discord import Message, TextChannel, VoiceChannel, Member, Embed, VoiceClie
 from discord.ext.commands import Bot
 
 from stock import get_stock
+from covid19 import get_covid19
 from ranking import Ranking
-from covid19 import Covid19
 
 
 bot_name = "호돌봇"  # 봇 이름
@@ -70,9 +70,8 @@ async def on_message_fn(client: Bot, message: Message):
 
         # 코로나
         elif text == '코로나':
-            covid19 = Covid19(channel)
-            covid19.all()
-            await covid19.show()
+            covid19 = get_covid19()
+            await channel.send(covid19)
 
         # 프로그래밍
         elif text == '프로그래밍':
