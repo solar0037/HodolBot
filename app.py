@@ -4,7 +4,7 @@ from discord.ext.commands import Bot
 
 from stock import get_stock
 from covid19 import get_covid19
-from ranking import Ranking
+from ranking import get_programming, get_anime
 
 
 bot_name = "호돌봇"  # 봇 이름
@@ -28,7 +28,7 @@ async def on_message_fn(client: Bot, message: Message):
     channel: TextChannel = message.channel
     voice: VoiceClient = message.author.voice
 
-    if content.startswith(bot_call):
+    if content.startswith(bot_call) and message.guild.name == 'Test Server':
         text = content.replace(bot_call, "").strip()  # "!"를 제외한 나머지 텍스트
         print(f"message: {message}")
 
@@ -75,15 +75,13 @@ async def on_message_fn(client: Bot, message: Message):
 
         # 프로그래밍
         elif text == '프로그래밍':
-            ranking = Ranking(channel)
-            ranking.programming()
-            await ranking.show()
+            programming = get_programming()
+            await channel.send(programming)
 
         # 애니
         elif text == '애니':
-            ranking = Ranking(channel)
-            ranking.anime()
-            await ranking.show()
+            anime = get_anime()
+            await channel.send(anime)
 
         # 개발자
         elif text == '개발자':
