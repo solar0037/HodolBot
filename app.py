@@ -1,5 +1,5 @@
 import random
-from discord import Message, TextChannel, VoiceChannel, Member, Embed, Client, VoiceClient
+from discord import Message, TextChannel, VoiceChannel, Member, Embed, VoiceClient
 from discord.ext.commands import Bot
 
 from stock import Stock
@@ -44,7 +44,7 @@ async def on_message_fn(client: Bot, message: Message):
             await channel.send(f"<@{author.id}> ㅃ2")
 
             voice_client: VoiceClient = client.voice_client
-            await client.voice_client.disconnect()
+            await voice_client.disconnect()
 
         # 말해
         elif text == '말해':
