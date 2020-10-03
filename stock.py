@@ -36,13 +36,16 @@ def get_stock():
     }
     line = '-'*50
 
-    stock_info = ""
+    info = ""
     for data in stocks.values():
-        stock_info += f"{data['name']:10s} {data['nv']:10s} {data['cv']:5s}({data['cr']:5s})\n"
+        info += f"{data['name']:<10} {data['nv']:>10} {data['cv']:>5} {'('+data['cr']+')':<14}\n"
 
-    message_ctx = f"주식 정보\n현재 코스피, 코스닥, 코스피200 정보입니다.\n{line}\n" \
-                  f"{stock_info}\n" \
-                  f"정보 제공: 네이버 금융\n{line}\n"
+    message_ctx = f"주식 정보\n" \
+                  f"현재 코스피, 코스닥, 코스피200 정보입니다.\n" \
+                  f"{line}\n" \
+                  f"{info}" \
+                  f"{line}\n" \
+                  f"정보 제공: 네이버 금융\n"
 
     message = f"```nim\n{message_ctx}```"
     return message
@@ -52,10 +55,10 @@ def get_stock():
 def decorate(value: str, rate: str):
     if rate[0] == '+':
         value = '▲'+value
-        rate = rate.replace("상승", "")
+        rate = rate.replace('상승', '')
     elif rate[0] == '-':
         value = '▼'+value
-        rate = rate.replace("하락", "")
+        rate = rate.replace("하락", '')
     else:
         value = '-'+value
     return value, rate
