@@ -3,66 +3,53 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 
-class Stock:
-    def __init__(self, channel):  # 디버깅: channel=None
-        self.channel = channel
-        self.stocks = []
-        self.message = ""
+# 주요종목 추가(코스피, 코스닥, 코스피200)
+def add_major(stock_type: str):
+    eng2kor = {'kospi': '코스피', 'kosdaq': '코스닥', 'kospi200': '코스피200'}
 
-    # 모든 주요종목 추가(코스피, 코스닥, 코스피200)
-    def all_major(self):
-        self.stock_major('kospi')
-        self.stock_major('kosdaq')
-        self.stock_major('kospi200')
+    url = f'https://finance.naver.com/sise/sise_index.nhn?code={stock_type.upper()}'
+    req = urllib.request.Request(url)
+    html = urlopen(req)
+    soup = BeautifulSoup(html, 'html.parser')
 
-        # 메세지 설정
-        self.message += "```javascript\n"
-        self.message += "주식 정보\n" \
-                        "현재 코스피, 코스닥, 코스피200 정보입니다.\n" \
-                        "--------------------------------------------------\n"
-        for data in self.stocks:
-            self.message += "{:10s} {:10s} {:5s}({:5s})\n".format(
-                data['name'], data['nv'], data['cv'], data['cr']
-            )
-        self.message += "--------------------------------------------------\n" \
-                        "정보 제공: 네이버 금융\n"
-        self.message += "```"
+    nv = soup.find('em', {'id': 'now_value'}).text.strip()
+    c_raw: str = soup.find('span', {'id': 'change_value_and_rate'}).text.strip()
+    cv = c_raw.split(' ')[0]
+    cr = c_raw.split(' ')[1]
+    cv, cr = decorate(cv, cr)
 
-    # 주요종목 추가(코스피, 코스닥, 코스피200)
-    def stock_major(self, stock_type):
-        eng2kor = {'kospi': '코스피', 'kosdaq': '코스닥', 'kospi200': '코스피200'}
+    stocks = {
+        'name': eng2kor[stock_type],
+        'nv': nv,
+        'cv': cv,
+        'cr': cr
+    }
+    return stocks
 
-        url = "https://finance.naver.com/sise/sise_index.nhn?code=" + stock_type.upper()
-        req = urllib.request.Request(url)
-        html = urlopen(req)
-        soup = BeautifulSoup(html, "html.parser")
 
-        nv = soup.find("em", {"id": "now_value"}).text.strip()
-        c_raw = soup.find("span", {"id": "change_value_and_rate"}).text.strip()
-        cv = c_raw.split(' ')[0]
-        cr = c_raw.split(' ')[1]
-        cv, cr = decorate(cv, cr)
-        self.stocks.append({'name': eng2kor[stock_type],
-                            'nv': nv,
-                            'cv': cv,
-                            'cr': cr})
+# 주식 가져오기
+def get_stock():
+    stocks = {
+        'kospi': add_major('kospi'),
+        'kosdaq': add_major('kosdaq'),
+        'kospi200': add_major('kospi200')
+    }
+    line = '-'*50
 
-    # 메세지 보내기
-    async def show(self):
-        await self.channel.send(self.message)
+    stock_info = ""
+    for data in stocks.values():
+        stock_info += f"{data['name']:10s} {data['nv']:10s} {data['cv']:5s}({data['cr']:5s})\n"
 
-    # 디버깅 전용
-    def debug(self):
-        for data in self.stocks:
-            # embed.add_field(name=data['name'],
-            #                 value="{}\n{} {}".format(data['nv'], data['cv'], data['cr']),
-            #                 inline=True)
-            print(data['name'])
-            print(data['nv'], data['cv'], data['cr'])
+    message_ctx = f"주식 정보\n현재 코스피, 코스닥, 코스피200 정보입니다.\n{line}\n" \
+                  f"{stock_info}\n" \
+                  f"정보 제공: 네이버 금융\n{line}\n"
+
+    message = f"```nim\n{message_ctx}```"
+    return message
 
 
 # 주식 변동 문자열 꾸미기
-def decorate(value, rate: str):
+def decorate(value: str, rate: str):
     if rate[0] == '+':
         value = '▲'+value
         rate = rate.replace("상승", "")
@@ -75,6 +62,5 @@ def decorate(value, rate: str):
 
 
 if __name__ == '__main__':
-    stock = Stock(None)
-    stock.all_major()
-    stock.debug()
+    stock = get_stock()
+    print(stock)

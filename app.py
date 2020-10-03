@@ -2,7 +2,7 @@ import random
 from discord import Message, TextChannel, VoiceChannel, Member, Embed, VoiceClient
 from discord.ext.commands import Bot
 
-from stock import Stock
+from stock import get_stock
 from ranking import Ranking
 from covid19 import Covid19
 
@@ -65,9 +65,8 @@ async def on_message_fn(client: Bot, message: Message):
 
         # 주식
         elif text == '주식':
-            stock = Stock(channel)
-            stock.all_major()
-            await stock.show()
+            stock = get_stock()
+            await channel.send(stock)
 
         # 코로나
         elif text == '코로나':
