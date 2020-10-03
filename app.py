@@ -28,7 +28,7 @@ async def on_message_fn(client: Bot, message: Message):
     channel: TextChannel = message.channel
     voice: VoiceClient = message.author.voice
 
-    if content.startswith(bot_call) and message.guild.name == 'Test Server':
+    if content.startswith(bot_call):
         text = content.replace(bot_call, "").strip()  # "!"를 제외한 나머지 텍스트
         print(f"message: {message}")
 
