@@ -1,8 +1,3 @@
-"""
-호돌봇의 소스코드입니다.
-깃허브 레포지토리: https://github.com/sqrtpi177/hodol-bot
-"""
-
 from discord.ext.commands import Bot
 from app import on_ready_fn, on_message_fn
 
