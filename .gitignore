@@ -1,4 +1,4 @@
-# Created by .ignore support plugin (hsz.mobi)
 .idea/
+.vscode/
 __pycache__/
 token.txt
