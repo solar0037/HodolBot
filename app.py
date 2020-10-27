@@ -30,7 +30,8 @@ async def on_message_fn(client: Bot, message: Message):
 
     if content.startswith(bot_call):
         text = content.replace(bot_call, "").strip()  # "!"를 제외한 나머지 텍스트
-        print(f"message: {message}")
+        # print(f"message: {message}")
+        print(f"message: {text}")
 
         # 안녕
         if text == '안녕':
