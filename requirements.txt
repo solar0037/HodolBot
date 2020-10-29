@@ -23,4 +23,4 @@ toml==0.10.1
 urllib3==1.25.11
 wincertstore==0.2
 wrapt==1.12.1
-yarl==1.5.1
+yarl==1.6.2
