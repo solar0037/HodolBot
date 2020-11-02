@@ -1,5 +1,5 @@
 import random
-from discord import Message, TextChannel, VoiceChannel, Member, Embed, VoiceClient
+from discord import Message, TextChannel, Member, Embed
 from discord.ext.commands import Bot
 
 from .stock import get_stock
@@ -26,26 +26,18 @@ async def on_message_fn(client: Bot, message: Message):
     author: Member = message.author
     content: str = message.content
     channel: TextChannel = message.channel
-    voice: VoiceClient = message.author.voice
 
     if content.startswith(bot_call):
         text = content.replace(bot_call, "").strip()  # "!"를 제외한 나머지 텍스트
-        # print(f"message: {message}")
         print(f"message: {text}")
 
         # 안녕
         if text == '안녕':
             await channel.send(f"<@{author.id}> 어흥~!")
 
-            voice_channel: VoiceChannel = voice.channel
-            client.voice_client = await voice_channel.connect()
-
         # 잘가
         elif text == '잘가':
             await channel.send(f"<@{author.id}> ㅃ2")
-
-            voice_client: VoiceClient = client.voice_client
-            await voice_client.disconnect()
 
         # 말해
         elif text == '말해':
