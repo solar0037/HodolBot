@@ -1,3 +1,6 @@
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4121262641cd4647be5c864b0d16fd9c)](https://app.codacy.com/gh/sqrtpi177/hodol-bot?utm_source=github.com&utm_medium=referral&utm_content=sqrtpi177/hodol-bot&utm_campaign=Badge_Grade_Settings)
+
 <h2>개요</h2>
 호돌봇의 소스 코드입니다.<br>
 당신과 놀아줄 거에요.<br>
