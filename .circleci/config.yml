@@ -13,7 +13,7 @@ jobs:
       - python/save-cache
       - run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
       - run: poetry install
-      - run: poetry run python3 main.py
+      - run: poetry run python3 -m unittest
 
 workflows:
   main:
