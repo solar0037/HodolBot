@@ -4,7 +4,7 @@ import requests
 
 def get_programming():
     url = 'https://www.tiobe.com/tiobe-index/'
-    html = requests.get(url)
+    html = requests.get(url, verify=False)
     soup = BeautifulSoup(html.text, 'html.parser')
     table = soup.find('table', {'id': 'top20'})
     tr_list = table.find('tbody').find_all('tr')
@@ -33,7 +33,7 @@ def get_programming():
 
 def get_anime():
     url = 'http://anime.onnada.com/rank.php'
-    html = requests.get(url)
+    html = requests.get(url, verify=False)
     soup = BeautifulSoup(html.content.decode('utf-8', 'replace'), 'html.parser')
 
     tables = soup.find_all('table', class_='web-array')
