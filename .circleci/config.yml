@@ -8,9 +8,6 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
       - run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
       - run: poetry install
       - run: poetry run python3 -m unittest
