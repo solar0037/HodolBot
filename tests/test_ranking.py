@@ -1,18 +1,18 @@
-import time
 import unittest
 from hodolbot.ranking import get_programming, get_anime
 
 
 class TestRanking(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.programming = get_programming()
+        cls.anime = get_anime()
+
     def test_get_programming(self):
-        programming = get_programming()
-        self.assertIsNotNone(programming)
-        time.sleep(0.1)
+        self.assertIsNotNone(self.programming)
     
     def test_get_anime(self):
-        anime = get_anime()
-        self.assertIsNotNone(anime)
-        time.sleep(0.1)
+        self.assertIsNotNone(self.anime)
 
 
 if __name__ == '__main__':
