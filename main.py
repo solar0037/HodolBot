@@ -10,10 +10,10 @@ class HodolBot(Bot):
         await on_ready_fn(self)
 
     async def on_message(self, message):
-        await on_message_fn(client, message)
+        await on_message_fn(self, message)
 
 
-if __name__ == '__main__':
+def main():
     with open('./token.txt', 'r', encoding='utf-8') as f:
         token = f.readline()  # token 유출 방지
 

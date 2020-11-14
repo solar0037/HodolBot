@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 def get_covid19():
     url = 'http://ncov.mohw.go.kr/'
-    html = requests.get(url, verify=False)
+    html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
     container: bs4.Tag = soup.find('ul', class_='liveNum')
     elements: list = container.select('li')

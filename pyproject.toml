@@ -1,8 +1,11 @@
 [tool.poetry]
-name = "hodol-bot"
+name = "hodolbot"
 version = "0.1.0"
 description = ""
 authors = ["sqrtpi177 <solar0037@gmail.com>"]
+
+[tool.poetry.scripts]
+start = "main:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"

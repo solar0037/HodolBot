@@ -12,7 +12,7 @@ def add_major(stock_type: str):
     """     req = urllib.request.Request(url)
     html = urlopen(req)
     soup = BeautifulSoup(html, 'html.parser') """
-    html = requests.get(url, verify=False)
+    html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
 
     nv = soup.find('em', {'id': 'now_value'}).text.strip()

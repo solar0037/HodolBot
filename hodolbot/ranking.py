@@ -4,7 +4,7 @@ import requests
 
 def get_programming():
     url = 'https://www.tiobe.com/tiobe-index/'
-    html = requests.get(url, verify=False)
+    html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
     table = soup.find('table', {'id': 'top20'})
     tr_list = table.find('tbody').find_all('tr')
