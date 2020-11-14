@@ -1,5 +1,3 @@
-import urllib.request
-from urllib.request import urlopen
 import requests
 from bs4 import BeautifulSoup
 
@@ -9,9 +7,6 @@ def add_major(stock_type: str):
     eng2kor = {'kospi': '코스피', 'kosdaq': '코스닥', 'kospi200': '코스피200'}
 
     url = f'https://finance.naver.com/sise/sise_index.nhn?code={stock_type.upper()}'
-    """     req = urllib.request.Request(url)
-    html = urlopen(req)
-    soup = BeautifulSoup(html, 'html.parser') """
     html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
 
