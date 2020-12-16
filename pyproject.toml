@@ -10,7 +10,7 @@ start = "main:main"
 [tool.poetry.dependencies]
 python = "^3.8"
 beautifulsoup4 = "^4.9.3"
-requests = "^2.25.0"
+requests = "^2.25.1"
 "discord.py" = "^1.5.1"
 
 [tool.poetry.dev-dependencies]
