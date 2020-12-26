@@ -1,4 +1,5 @@
-import hodolbot.app
+from hodolbot.app import main
+
 
 if __name__ == "__main__":
-    hodolbot.app.main()
+    main()
