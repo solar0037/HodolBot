@@ -1,10 +1,10 @@
-## Hodol-Bot
+## HodolBot
 
 호돌봇의 소스 코드입니다.
 당신과 놀아줄 거에요.
 하지만 재미 없을지도 모릅니다.
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4121262641cd4647be5c864b0d16fd9c)](https://app.codacy.com/gh/solar0037/hodol-bot?utm_source=github.com&utm_medium=referral&utm_content=solar0037/hodol-bot&utm_campaign=Badge_Grade_Settings)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4121262641cd4647be5c864b0d16fd9c)](https://app.codacy.com/gh/solar0037/hodolbot?utm_source=github.com&utm_medium=referral&utm_content=solar0037/hodolbot&utm_campaign=Badge_Grade_Settings)
 
 ## 실행
 
