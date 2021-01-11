@@ -1,1 +1,1 @@
-web: ./scripts/run.sh
+worker: ./scripts/run.sh
