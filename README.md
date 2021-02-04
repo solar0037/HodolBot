@@ -1,3 +1,7 @@
+# hodolbot-v1
+
+Python과 discord.py로 제작한 디스코드 봇입니다. 성능 등의 이슈 때문에 discordgo로 이전하게 되었습니다(discord.js일 수도 있음).
+
 ## hodolbot
 
 호돌봇의 소스 코드입니다.
